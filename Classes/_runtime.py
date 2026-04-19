@@ -1,3 +1,4 @@
+import subprocess
 from Classes._status import Status
 
 class Runtime:
@@ -6,10 +7,14 @@ class Runtime:
         self.processes = {}
 
     def start(self):
-        pass
+        for name, cmd in self.services.items():
+            proc = subprocess.Popen(cmd, shell=False)
+            self.processes[name] = proc
 
     def stop(self):
-        pass
+        for proc in self.processes.values():
+            proc.terminate()
+        self.processes.clear()
 
     def status(self):
         result = {}
