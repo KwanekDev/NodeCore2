@@ -22,8 +22,8 @@ class Runtime:
         for name, proc in self.processes.items():
             _processStatus = proc.poll()
             if _processStatus is None:
-                result[name] = Status.ONLINE
-            elif _processStatus is 0:
-                result[name] = Status.OFFLINE
+                result[name] = Status.ONLINE.value
+            elif _processStatus == 0:
+                result[name] = Status.OFFLINE.value
             else:
-                result[name] = Status.ERROR
+                result[name] = Status.ERROR.value
