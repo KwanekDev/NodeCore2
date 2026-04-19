@@ -4,19 +4,21 @@
 class Dispatcher:
     def __init__(self, runtime):
         self.runtime = runtime
-
-
-    def dispatch(self, request):
-        _command = request.get("command")
-        _args = request.get("args", {})
-
         self.routes = {
             "start": self.runtime.start,
             "stop": self.runtime.stop,
             "status": self.runtime.status
         }
 
-        if _command in self.routes:
-            return self.routes[_command]()
-        
-        return {"ok": False, "error": "unknown_command"}
+    def dispatch(self, request):
+        _command = request.get("command")
+        _args = request.get("args", {})
+
+        handler = self.routes.get(_command)
+        if not handler:
+            return {"ok": False, "message": "unknown_command"}
+        try:
+            return handler(**_args)
+        except TypeError:
+
+            return {"ok": False, "message": "Fatal error"}

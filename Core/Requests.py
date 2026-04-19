@@ -9,7 +9,15 @@ class Requests:
         if not isinstance(request, dict):
             return {"ok": False, "message": "invalid_request"}
         
-        if "command" not in request:
+        _command = request.get("command")
+
+        if not _command:
             return {"ok": False, "message": "missing_command"}
         
-        return self.dispatcher.dispatch(request)
+        _service = request.get("service")
+        return self.dispatcher.dispatch(
+            {
+                "command": _command,
+                "service": _service
+            }
+        )

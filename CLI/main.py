@@ -30,4 +30,6 @@ while True:
     raw = input(">>> ")
     request = {"command": raw.strip(), "args": {}}
     response = handler.handle(request)
-    print(response)
+    _msg = response.get("message")
+    if _msg is not None:
+        print(_msg)
