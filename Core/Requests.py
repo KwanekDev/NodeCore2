@@ -7,9 +7,9 @@ class Requests:
 
     def handle(self, request):
         if not isinstance(request, dict):
-            return {"ok": False, "error": "invalid_request"}
+            return {"ok": False, "message": "invalid_request"}
         
         if "command" not in request:
-            return {"ok": False, "error": "missing_command"}
+            return {"ok": False, "message": "missing_command"}
         
         return self.dispatcher.dispatch(request)
