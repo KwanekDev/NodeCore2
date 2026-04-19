@@ -5,19 +5,18 @@ class Dispatcher:
     def __init__(self, runtime):
         self.runtime = runtime
 
+
     def dispatch(self, request):
         _command = request.get("command")
         _args = request.get("args", {})
 
-        if _command == "start":
-            self.runtime.start()
-            return {"ok": True}
-        
-        if _command == "stop":
-            self.runtime.stop()
-            return {"ok": False}
-        
-        if _command == "status":
-            return {"ok": True, "data": self.runtime.status()}
+        self.routes = {
+            "start": self.runtime.start,
+            "stop": self.runtime.stop,
+            "status": self.runtime.status
+        }
+
+        if _command in self.routes:
+            return self.routes[_command]()
         
         return {"ok": False, "error": "unknown_command"}
