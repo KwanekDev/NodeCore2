@@ -7,14 +7,13 @@ from Core.Requests import Requests
 from Core.Dispatcher import Dispatcher
 
 
-#This is for prototyping only
 MODULES_DIR = Path("Examples")
 
 def setup_services(dir):
     result = {}
 
     if dir.exists() and dir.is_dir():
-        for script in dir.glob("*.py"):
+        for script in dir.rglob("*.py"):
             if not script.name.startswith("_"):
                 result[script.stem] = ["python", str(script)]
 
