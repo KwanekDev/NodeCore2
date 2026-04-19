@@ -21,4 +21,4 @@ class Dispatcher:
             return handler(**_args)
         except TypeError:
 
-            return {"ok": False, "message": "Fatal error"}
+            return {"ok": False, "message": str(TypeError)}

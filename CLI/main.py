@@ -28,7 +28,22 @@ handler = Requests(dispatcher)
 
 while True:
     raw = input(">>> ")
-    request = {"command": raw.strip(), "args": {}}
+    parts = raw.strip().split()
+
+    if not parts:
+        continue
+
+    _command = parts[0]
+    _args = {}
+
+    if len(parts) > 1:
+        _args["name"] = parts[1]
+    
+    request = {
+        "command": _command,
+        "args": _args
+    }
+
     response = handler.handle(request)
     _msg = response.get("message")
     if _msg is not None:

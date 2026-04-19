@@ -15,9 +15,4 @@ class Requests:
             return {"ok": False, "message": "missing_command"}
         
         _service = request.get("service")
-        return self.dispatcher.dispatch(
-            {
-                "command": _command,
-                "service": _service
-            }
-        )
+        return self.dispatcher.dispatch(request)

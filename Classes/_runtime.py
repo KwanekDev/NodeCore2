@@ -35,17 +35,24 @@ class Runtime:
         self.processes.clear()
         return {"ok": True, "message": f"Stopped {count} services"}
 
-    def status(self):
-        if not self.processes:
-            return {"ok": True, "message": "No services running. Call 'start' first."}
-            
+    def status(self, name=None):
         result = {}
-        for name, proc in self.processes.items():
-            _processStatus = proc.poll()
-            if _processStatus is None:
-                result[name] = Status.ONLINE.value
-            elif _processStatus == 0:
-                result[name] = Status.OFFLINE.value
+
+        targets = [name] if name else list(self.services.keys())
+
+        for svc_name in targets:
+            _proc = self.processes.get(svc_name)
+
+            if _proc:
+                _processStatus = _proc.poll()
+
+                if _processStatus is None:
+                    result[svc_name] = Status.ONLINE.value
+                elif _processStatus == 0:
+                    result[svc_name] = Status.OFFLINE.value
+                else:
+                    result[svc_name] = Status.ERROR.value
             else:
-                result[name] = Status.ERROR.value
+                result[svc_name] = Status.OFFLINE.value
+                
         return {"ok": True, "message": result}
