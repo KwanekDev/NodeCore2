@@ -4,6 +4,9 @@ from rich.prompt import Prompt
 console = Console()
 
 def run_loop(handler):
+    def format_result(result: dict) -> str:
+        return "\n".join(f"{k}: {v}" for k, v in result.items())
+
     while True:
         raw = Prompt.ask(">>>")
         parts = raw.strip().split()
@@ -26,4 +29,7 @@ def run_loop(handler):
         _msg = response.get("message")
 
         if _msg is not None:
-            console.print(_msg)
+            if isinstance(_msg, dict):
+                console.print(format_result(_msg))
+            else:
+                console.print(_msg)
