@@ -1,0 +1,3 @@
+Path = "test"
+
+# The folder needs to be next to the NodeCore2 folder (so basically you can just put the whole Nodecore folder next to your project and set here name of your project, and it will work)
