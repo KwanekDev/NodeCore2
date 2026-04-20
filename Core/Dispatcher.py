@@ -19,6 +19,5 @@ class Dispatcher:
             return {"ok": False, "message": "unknown_command"}
         try:
             return handler(**_args)
-        except TypeError:
-
-            return {"ok": False, "message": str(TypeError)}
+        except Exception as e:
+            return {"ok": False, "message": str(e)}

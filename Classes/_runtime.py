@@ -20,7 +20,10 @@ class Runtime:
 
         for name, cmd in self.services.items():
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) 
-            self.processes[name] = proc
+            self.processes[name] = {
+                "proc": proc,
+                "started_at": time.time()
+            }
         return {"ok": True, "message": f"Started {len(self.services)} services"}
 
     def stop(self, name=None):
@@ -29,12 +32,12 @@ class Runtime:
             if not proc:
                 return {"ok": False, "message": f"Service {name} not running"}
 
-            proc.terminate()
+            proc["proc"].terminate()
             del self.processes[name]
             return {"ok": True, "message": f"Stopped {name}"}
 
         for proc in self.processes.values():
-            proc.terminate()
+            proc["proc"].terminate()
         count = len(self.processes)
         self.processes.clear()
         return {"ok": True, "message": f"Stopped {count} services"}
@@ -62,17 +65,19 @@ class Runtime:
                         "status": _status,
                         "pid": _proc["proc"].pid,
                         "code": _processStatus,
-                        "started_at": time.time()
+                        "started_at": _proc["started_at"]
                     }
                 else:
                     result[svc_name] = _status
             else:
-                result[svc_name] = {
-                    "status": Status.OFFLINE.value,
-                    "pid": 0,
-                    "code": 0,
-                    "started_at": None
-
-                }
+                if detailed:
+                    result[svc_name] = {
+                        "status": Status.OFFLINE.value,
+                        "pid": 0,
+                        "code": None,
+                        "started_at": None
+                    }
+                else:
+                    result[svc_name] = Status.OFFLINE.value
                 
         return {"ok": True, "message": result}

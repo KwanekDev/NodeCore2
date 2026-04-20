@@ -22,15 +22,15 @@ def resolve_root_dir(start: Path):
 def create_app(base_dir: Path):
     config_path = base_dir / "config.toml"
     config = load_config(config_path)
-    proj_path = config.get("Path")
+    
+    if isinstance(config, dict) and config.get("ok") is False:
+        services = {}
+    else:
+        proj_path = config.get("Path")
+        root_dir = resolve_root_dir(base_dir)
+        modules_dir = root_dir / proj_path
+        services = setup_services(modules_dir)
 
-    root_dir = resolve_root_dir(base_dir)
-    modules_dir = root_dir / proj_path
-    services = setup_services(modules_dir)
-
-
-
-    # do not touch
     runtime = Runtime(services)
     dispatcher = Dispatcher(runtime)
     handler = Requests(dispatcher)
