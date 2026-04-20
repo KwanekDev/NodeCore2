@@ -18,7 +18,14 @@ def run_loop(handler):
         _args = {}
 
         if len(parts) > 1: 
-            _args["name"] = parts[1]
+            arg = parts[1]
+
+            if arg.lower() == "true":
+                _args["detailed"] = True
+            elif arg.lower() == "false":
+                _args["detailed"] = False
+            else:
+                _args["name"] = arg
 
         request = {
             "command": _command,

@@ -1,4 +1,5 @@
 import subprocess
+import time
 from Classes._status import Status
 
 class Runtime:
@@ -10,7 +11,10 @@ class Runtime:
         if name:
             if name in self.services:
                 proc = subprocess.Popen(self.services[name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                self.processes[name] = proc
+                self.processes[name] = {
+                    "proc": proc,
+                    "started_at": time.time()
+                }
                 return {"ok": True, "message": f"Started {name}"}
             return {"ok": False, "message": f"Service {name} not found"}
 
@@ -35,7 +39,7 @@ class Runtime:
         self.processes.clear()
         return {"ok": True, "message": f"Stopped {count} services"}
 
-    def status(self, name=None):
+    def status(self, name=None, detailed=False):
         result = {}
 
         targets = [name] if name else list(self.services.keys())
@@ -44,15 +48,31 @@ class Runtime:
             _proc = self.processes.get(svc_name)
 
             if _proc:
-                _processStatus = _proc.poll()
+                _processStatus = _proc["proc"].poll()
 
                 if _processStatus is None:
-                    result[svc_name] = Status.ONLINE.value
+                    _status = Status.ONLINE.value
                 elif _processStatus == 0:
-                    result[svc_name] = Status.OFFLINE.value
+                    _status = Status.OFFLINE.value
                 else:
-                    result[svc_name] = Status.ERROR.value
+                    _status = Status.ERROR.value
+
+                if detailed:
+                    result[svc_name] = {
+                        "status": _status,
+                        "pid": _proc["proc"].pid,
+                        "code": _processStatus,
+                        "started_at": time.time()
+                    }
+                else:
+                    result[svc_name] = _status
             else:
-                result[svc_name] = Status.OFFLINE.value
+                result[svc_name] = {
+                    "status": Status.OFFLINE.value,
+                    "pid": 0,
+                    "code": 0,
+                    "started_at": None
+
+                }
                 
         return {"ok": True, "message": result}
